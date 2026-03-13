@@ -5,12 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DFA OMEGA NODE // 2075</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 全局劫持 Tailwind 绿色主题为“神圣废土金与青铜”主题
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        green: { // 保持 green 类名不变，底层替换为沙丘金/青铜色系，实现免改标签换肤
+                            50: '#fdf8f6',
+                            100: '#f2e8e5',
+                            200: '#eaddd7',
+                            300: '#e0cec7',
+                            400: '#d2bab0',
+                            500: '#d4b483', // 主色：神圣金
+                            600: '#b07d4b', // 边框/暗部：古老青铜
+                            700: '#865f51',
+                            800: '#4a3026',
+                            900: '#2c1a14',
+                            950: '#1a0d0a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 引入 html2canvas 用于将 DOM 转换为图片 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
         body {
-            background-color: #050505;
-            color: #00ff41;
+            background-color: #0c0806; /* 深邃的废土暗褐底色 */
+            color: #d4b483; /* 替换为主色调：神圣沙金 */
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden;
             margin: 0;
@@ -35,7 +61,7 @@
 
         /* 屏幕边缘发光 */
         .screen-glow {
-            box-shadow: inset 0 0 100px rgba(0, 255, 65, 0.1);
+            box-shadow: inset 0 0 100px rgba(212, 180, 131, 0.15); /* 神圣金光晕 */
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             pointer-events: none;
@@ -44,13 +70,13 @@
 
         /* 自定义滚动条 */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; border-left: 1px solid #003300; }
-        ::-webkit-scrollbar-thumb { background: #00ff41; }
-        ::-webkit-scrollbar-thumb:hover { background: #00cc33; }
+        ::-webkit-scrollbar-track { background: #0a0604; border-left: 1px solid #2c1a14; }
+        ::-webkit-scrollbar-thumb { background: #d4b483; }
+        ::-webkit-scrollbar-thumb:hover { background: #b07d4b; }
 
-        .terminal-text { text-shadow: 0 0 5px rgba(0, 255, 65, 0.5); }
-        .alert-text { color: #ff003c; text-shadow: 0 0 5px rgba(255, 0, 60, 0.5); }
-        .eng-text { font-size: 0.75rem; line-height: 1.1rem; opacity: 0.5; color: #88ffaa; margin-top: 0.25rem; margin-bottom: 1.25rem; font-family: 'Share Tech Mono', monospace; }
+        .terminal-text { text-shadow: 0 0 5px rgba(212, 180, 131, 0.4); }
+        .alert-text { color: #e65100; text-shadow: 0 0 5px rgba(230, 81, 0, 0.5); }
+        .eng-text { font-size: 0.75rem; line-height: 1.1rem; opacity: 0.5; color: #d2bab0; margin-top: 0.25rem; margin-bottom: 1.25rem; font-family: 'Share Tech Mono', monospace; }
         
         .nav-item {
             cursor: pointer;
@@ -58,13 +84,13 @@
             border-left: 2px solid transparent;
         }
         .nav-item:hover {
-            background-color: rgba(0, 255, 65, 0.1);
-            border-left: 2px solid #00ff41;
+            background-color: rgba(212, 180, 131, 0.1);
+            border-left: 2px solid #d4b483;
             padding-left: 1.5rem;
         }
         .nav-item.active {
-            background-color: rgba(0, 255, 65, 0.2);
-            border-left: 4px solid #00ff41;
+            background-color: rgba(212, 180, 131, 0.2);
+            border-left: 4px solid #d4b483;
             padding-left: 1.5rem;
             font-weight: bold;
         }
@@ -75,12 +101,15 @@
         }
         @keyframes blink { 50% { opacity: 0; } }
 
-        .data-panel { border: 1px solid #00ff41; background: rgba(0, 40, 0, 0.1); }
-        .data-label { color: #88ffaa; }
+        .data-panel { border: 1px solid #b07d4b; background: rgba(176, 125, 75, 0.1); }
+        .data-label { color: #d2bab0; }
         .new-badge { animation: pulse-red 2s infinite; }
         @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        .news-box { border-left: 4px solid #00ff41; background: rgba(0, 255, 65, 0.05); padding: 1rem; margin-bottom: 1.5rem; }
+        .news-box { border-left: 4px solid #b07d4b; background: rgba(212, 180, 131, 0.05); padding: 1rem; margin-bottom: 1.5rem; }
+        
+        /* 导出图片时的特定样式修正 */
+        .export-watermark { display: none; }
     </style>
 </head>
 <body class="h-screen flex flex-col relative">
@@ -113,10 +142,15 @@
         </aside>
 
         <!-- 右侧内容展示 -->
-        <main class="w-3/4 bg-[#020a02] p-8 overflow-y-auto relative" id="main-content">
+        <main class="w-3/4 bg-[#0a0604] p-8 overflow-y-auto relative" id="main-content">
             <div id="content-display" class="terminal-text leading-relaxed max-w-4xl pb-20">
                 <!-- 内容加载区域 -->
             </div>
+            
+            <!-- 悬浮的图片导出与分享按钮 -->
+            <button id="export-btn" onclick="exportAndShare()" class="fixed bottom-8 right-8 border border-green-500 text-green-500 bg-black/80 px-4 py-2 text-xs uppercase tracking-widest hover:bg-green-500 hover:text-black transition-colors z-50 shadow-[0_0_15px_rgba(212,180,131,0.3)]">
+                [ 🔗 DECRYPT & SHARE ]
+            </button>
         </main>
     </div>
 
@@ -524,7 +558,94 @@
             }, 500);
         }
 
+        // 图片导出与分享功能
+        function exportAndShare() {
+            const content = document.getElementById('content-display');
+            const btn = document.getElementById('export-btn');
+            
+            // 按钮状态变化提供视觉反馈
+            const originalText = btn.innerText;
+            btn.innerText = '[ 🔄 ENCODING... ]';
+            
+            // 隐藏可能影响图片美观的元素（比如闪烁光标）
+            const cursor = content.querySelector('.typing-cursor');
+            if(cursor) cursor.style.display = 'none';
+
+            // 临时添加机密水印到内容区底部
+            const watermark = document.createElement('div');
+            watermark.className = 'export-watermark';
+            watermark.style.display = 'block';
+            watermark.style.marginTop = '40px';
+            watermark.style.paddingTop = '20px';
+            watermark.style.borderTop = '1px dashed rgba(212,180,131,0.4)';
+            watermark.style.fontSize = '12px';
+            watermark.style.opacity = '0.5';
+            watermark.style.fontFamily = 'monospace';
+            watermark.innerHTML = `
+                <p>> OMEGA_NODE // 2075 ARCHIVE DECRYPTED</p>
+                <p>> SHARE.PROTOCOL.ENGAGED // ${new Date().toISOString()}</p>
+            `;
+            content.appendChild(watermark);
+
+            // 调用 html2canvas 进行截图
+            html2canvas(content, {
+                backgroundColor: '#0a0604', // 配合新的沙金暗黑背景
+                scale: 2, // 2倍缩放，保证生成的图片高清
+                logging: false,
+                useCORS: true // 允许加载跨域字体和图片
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const filename = `DFA_ARCHIVE_${Date.now()}.png`;
+                    const file = new File([blob], filename, { type: 'image/png' });
+                    
+                    // 已替换为全新的 Hashtag
+                    const shareText = "DFA OMEGA NODE // 2075 档案已解密。人类正在排队购买自己的赛博牢笼... #AIFuture #DFAArchive";
+
+                    // 1. 尝试调用系统原生分享 (支持直接传图到 X/Twitter, 微信, Telegram 等)
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: 'DFA OMEGA NODE',
+                            text: shareText,
+                            files: [file]
+                        }).then(() => {
+                            restoreUI(cursor, content, watermark, btn, originalText);
+                        }).catch(err => {
+                            console.log('User canceled or share failed:', err);
+                            fallbackShare(canvas, filename, shareText);
+                            restoreUI(cursor, content, watermark, btn, originalText);
+                        });
+                    } else {
+                        // 2. 如果不支持传图分享，回退到：先下载图片，再自动打开 X (Twitter) 发帖页面
+                        fallbackShare(canvas, filename, shareText);
+                        restoreUI(cursor, content, watermark, btn, originalText);
+                    }
+                }, 'image/png');
+            }).catch(err => {
+                console.error('Export Failed:', err);
+                btn.innerText = '[ ❌ ERROR ]';
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+            });
+        }
+
+        function fallbackShare(canvas, filename, shareText) {
+            // 下载图片
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = imgData;
+            link.click();
+            
+            // 提示语并跳转到 X (Twitter)
+            const tweetText = encodeURIComponent(`${shareText}\n\n(图片已自动下载至您的设备，请在发布时点击附加该图片！)`);
+            window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+        }
+
+        function restoreUI(cursor, content, watermark, btn, originalText) {
+            if(cursor) cursor.style.display = 'inline-block';
+            content.removeChild(watermark);
+            btn.innerText = originalText;
+        }
+
         window.onload = initNav;
     </script>
 </body>
-</html>
