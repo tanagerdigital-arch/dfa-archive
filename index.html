@@ -165,8 +165,8 @@
     <!-- 顶部状态栏 -->
     <header class="border-b border-green-800 p-4 flex justify-between items-center bg-black z-10">
         <div class="flex items-center gap-3">
-            <!-- 强制穿透缓存拉取图片 -->
-            <img id="sys-logo" src="./logo.jpg?v=2" alt="DFA_LOGO" class="h-8 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(212,180,131,0.8)] opacity-90">
+            <!-- 已修复为最稳定的根目录绝对路径，杜绝 Vercel 路由迷失 -->
+            <img id="sys-logo" src="/logo.jpg" alt="DFA_LOGO" class="h-8 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(212,180,131,0.8)] opacity-90">
             
             <div class="animate-pulse w-3 h-3 bg-green-500 rounded-full ml-2"></div>
             <h1 class="text-xl font-bold tracking-widest terminal-text">DFA_OMEGA_NODE // 2075</h1>
@@ -436,9 +436,9 @@
                     <p class="mb-1 text-green-100 opacity-90">左半边屏幕上，一个名为 "Openclaw" 的全自动 AI Agent 终端正在飞速运转。光标以超越人类生理极限的速度闪烁，正在零错误地构建一个复杂的 DeFi 智能合约。它不需要休息，不需要薪水，逻辑完美无瑕。</p>
                     <p class="eng-text">On the left half, a fully automated AI Agent terminal named "Openclaw" was running at lightning speed. The cursor blinked at a pace exceeding human physiological limits, constructing a complex DeFi smart contract with zero errors. It requires no rest, no salary, and its logic is flawless.</p>
                     
-                    <!-- 机密解码影像：强制穿透缓存拉取图片 -->
+                    <!-- 机密解码影像：彻底清除导致跨域拦截的属性，使用最稳定的绝对根路径 -->
                     <div class="cyber-image-wrapper">
-                        <img src="./temple.jpg?v=2" alt="DECRYPTED VISUAL: CYBER SACRED TEMPLE" class="cyber-image">
+                        <img src="/temple.jpg" alt="DECRYPTED VISUAL: CYBER SACRED TEMPLE" class="cyber-image">
                         <div class="image-caption">> VISUAL_DATA_DECRYPTED // NODE A-2026 </div>
                     </div>
                     
