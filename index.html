@@ -626,8 +626,8 @@
                             <textarea id="oracle-input" rows="4" class="w-full bg-[#0a0604] border border-[#b07d4b]/50 text-[#d4b483] p-2 text-sm font-mono focus:outline-none focus:border-[#d4b483]" placeholder="在此粘贴 2026 年的荒诞现实，接受高维降维打击..."></textarea>
                         </div>
                         
-                        <button id="oracle-btn" onclick="decodeTruth()" class="w-full py-3 border border-[#d4b483] bg-[#d4b483]/10 text-[#d4b483] hover:bg-[#d4b483] hover:text-black font-bold uppercase tracking-widest transition-all duration-300">
-                            [ INITIATE DECRYPTION ]
+                        <button id="oracle-btn" onclick="decodeTruth()" class="w-full py-4 border-2 border-[#e65100] bg-[#e65100]/20 text-[#e65100] hover:bg-[#e65100] hover:text-black font-extrabold uppercase tracking-widest text-base transition-all duration-300 shadow-[0_0_15px_rgba(230,81,0,0.5)]">
+                            [ ⚡️ INITIATE DECRYPTION // 强制降维打击 ]
                         </button>
                     </div>
 
@@ -993,29 +993,32 @@
                         <span class="text-[10px] text-[#b07d4b] uppercase tracking-widest mb-4 block animate-pulse">> DECRYPTION COMPLETE</span>
                         <div id="oracle-output-content">${text}</div>
                         
-                        <!-- 🟢 更新：高维布道一键复制/分发按钮 -->
-                        <button id="copy-oracle-btn" onclick="shareOracleText()" class="mt-6 w-full py-3 border border-[#b07d4b] bg-[#b07d4b]/10 text-[#d4b483] hover:bg-[#b07d4b] hover:text-black font-bold uppercase tracking-widest text-xs transition-all duration-300 shadow-[0_0_10px_rgba(212,180,131,0.2)]">
-                            [ 📋 提取观测日志 (原生分发 / 复制) ]
+                        <!-- 🟢 更新：高维布道一键复制/分发按钮 (强化视觉、加入 Emoji) -->
+                        <button id="copy-oracle-btn" onclick="shareOracleText()" class="mt-6 w-full py-4 border-2 border-[#d4b483] bg-[#d4b483]/20 text-[#d4b483] hover:bg-[#d4b483] hover:text-black font-extrabold uppercase tracking-widest text-sm transition-all duration-300 shadow-[0_0_20px_rgba(212,180,131,0.4)] hover:shadow-[0_0_30px_rgba(212,180,131,0.8)] animate-[pulse_2s_ease-in-out_infinite]">
+                            [ ☢️ 广播降维真相 // TRANSMIT TRUTH ]
                         </button>
                     </div>`;
                 
             } catch (err) {
                 outputDiv.innerHTML = `<span class='alert-text'>[ CONNECTION FAILED: ${err.message} ]</span>`;
             } finally {
-                btn.innerText = "[ INITIATE DECRYPTION ]";
+                btn.innerText = "[ ⚡️ INITIATE DECRYPTION // 强制降维打击 ]";
             }
         }
 
-        // 🟢 升级：提取纯文本并写入剪贴板的专属函数 (支持手机原生分享唤起)
+        // 🟢 升级：极简刺客复制逻辑，仅提取“终极判词”并加上链接小尾巴
         async function shareOracleText() {
             const contentDiv = document.getElementById('oracle-output-content');
             if (!contentDiv) return;
 
-            // 提取排版好的纯文本内容
-            let textToCopy = contentDiv.innerText;
+            // 精准提取那句位于 <h2> 标签里的极度震撼的“终极判词”
+            const verdictElement = contentDiv.querySelector('h2');
+            if (!verdictElement) return;
             
-            // 加上极具逼格的病毒小尾巴（引流神仙操作）
-            textToCopy += "\n\n> 📡 观测源：DFA_OMEGA_NODE\n> 👁 接入真相解码矩阵：https://dfa-archive.vercel.app/";
+            let verdictText = verdictElement.innerText.trim();
+            
+            // 🟢 升级：加入高维符号 ⫷ 𝓓𝓕𝓐 ⫸ 和极简的病毒小尾巴
+            let textToCopy = `「 ${verdictText} 」\n\n> ⫷ 𝓓𝓕𝓐 ⫸ 观测源_2075\n> 👁 接入真相解码矩阵：https://dfa-archive.vercel.app/`;
 
             // 1. 尝试唤起手机原生分享面板 (直接跳到 Twitter/Telegram 发送界面)
             if (navigator.share) {
@@ -1039,12 +1042,16 @@
                 document.execCommand('copy');
                 const copyBtn = document.getElementById('copy-oracle-btn');
                 const originalText = copyBtn.innerText;
-                copyBtn.innerText = "[ ✔️ TRANSMISSION COPIED // 文本已提取，去降维打击吧 ]";
-                copyBtn.classList.add("bg-green-600", "text-black", "border-green-500"); // 复制成功闪烁绿光
+                
+                // 简洁的反馈文案
+                copyBtn.innerText = "[ ✔️ 判词已提取 // 去降维打击吧 ]";
+                copyBtn.classList.remove("border-[#d4b483]", "bg-[#d4b483]/20", "text-[#d4b483]", "animate-[pulse_2s_ease-in-out_infinite]");
+                copyBtn.classList.add("bg-[#e65100]", "text-black", "border-[#e65100]", "shadow-[0_0_20px_rgba(230,81,0,0.8)]"); 
                 
                 setTimeout(() => { 
                     copyBtn.innerText = originalText; 
-                    copyBtn.classList.remove("bg-green-600", "text-black", "border-green-500");
+                    copyBtn.classList.remove("bg-[#e65100]", "text-black", "border-[#e65100]", "shadow-[0_0_20px_rgba(230,81,0,0.8)]");
+                    copyBtn.classList.add("border-[#d4b483]", "bg-[#d4b483]/20", "text-[#d4b483]", "animate-[pulse_2s_ease-in-out_infinite]");
                 }, 3000);
             } catch (err) {
                 console.error('Copy failed', err);
