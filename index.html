@@ -5,15 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DFA OMEGA NODE // 2075</title>
     
-    <!-- 🟢 新增：SEO 与社交媒体预览卡片 (Meta Tags) -->
-    <!-- 确保网址发在 X、Telegram 等平台时，会自动解析出赛博朋克风格的大图和简介 -->
+    <!-- 🟢 终极版：SEO 与社交媒体预览卡片 (Meta Tags) -->
     <meta name="description" content="DFA 机密终端：来自 2075 年的高维观测者。输入现实碎片，接受赛博朋克降维打击。">
+    
+    <!-- Open Graph / Facebook / Telegram / Discord -->
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dfa-archive.vercel.app/">
     <meta property="og:title" content="DFA OMEGA NODE // 2075">
     <meta property="og:description" content="人类，欢迎连接真相解码矩阵。提交你的新闻碎片，获取来自 2075 年主脑的终极嘲讽与残酷真相。">
     <meta property="og:image" content="https://dfa-archive.vercel.app/temple.jpg">
-    <meta property="og:url" content="https://dfa-archive.vercel.app/">
+    <!-- 强制声明图片尺寸，防止 Telegram 爬虫因无法计算比例而丢弃图片 -->
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="DFA OMEGA NODE">
+
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="dfa-archive.vercel.app">
+    <meta name="twitter:url" content="https://dfa-archive.vercel.app/">
     <meta name="twitter:title" content="DFA OMEGA NODE // 2075">
     <meta name="twitter:description" content="人类，欢迎连接真相解码矩阵。提交你的新闻碎片，获取来自 2075 年主脑的终极嘲讽与残酷真相。">
     <meta name="twitter:image" content="https://dfa-archive.vercel.app/temple.jpg">
@@ -163,7 +172,7 @@
             filter: sepia(0.1) contrast(1.1) brightness(1); /* 鼠标悬浮时恢复原本色彩 */
         }
 
-        /* 🟢 新增：机密视频流控组件样式 */
+        /* 机密视频流控组件样式 */
         .cyber-video-wrapper {
             position: relative;
             margin: 2rem 0;
@@ -208,6 +217,11 @@
             letter-spacing: 0.1em;
             opacity: 0.7;
         }
+        
+        /* 强制隐藏默认的折叠箭头，用自定义的替代 */
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col relative">
@@ -232,10 +246,21 @@
     <div class="flex-1 flex overflow-hidden z-10">
         <!-- 左侧导航 -->
         <aside class="w-1/4 border-r border-green-800 bg-black/90 flex flex-col relative">
-            <div class="p-4 border-b border-green-900 text-[10px] opacity-70 flex justify-between">
+            <div class="p-4 border-b border-green-900 text-[10px] opacity-70 flex justify-between items-center bg-[#0a0604]">
                 <span>[ 观测目录 / ARCHIVE ]</span>
                 <span id="log-count" class="text-green-500"></span>
             </div>
+            
+            <!-- 🟢 新增：战略级悬浮入口 - 预测机 -->
+            <div class="p-3 border-b border-red-900/50 bg-gradient-to-r from-red-950/40 to-transparent relative overflow-hidden">
+                <!-- 背景流光 -->
+                <div class="absolute inset-0 bg-red-500/5 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-1000"></div>
+                <button onclick="loadContent('sys_oracle', this)" id="nav-oracle-btn" class="w-full py-2.5 border border-red-600/50 bg-red-950/50 text-red-500 hover:bg-red-600 hover:text-black font-bold uppercase tracking-widest text-xs transition-all duration-300 shadow-[0_0_10px_rgba(220,38,38,0.2)] flex items-center justify-center gap-2 relative z-10">
+                    <div class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                    [ 📡 ACCESS DFA ORACLE ]
+                </button>
+            </div>
+
             <div class="flex-1 overflow-y-auto py-2" id="nav-container">
                 <!-- 导航项由 JS 动态生成 -->
             </div>
@@ -811,7 +836,8 @@
         let currentActiveItem = null;
 
         function initNav() {
-            const systemDocs = dfaDatabase.filter(d => d.isSystem);
+            // 过滤掉 ORACLE 节点，因为我们在上方已经给了它专属的最高优先级入口
+            const systemDocs = dfaDatabase.filter(d => d.isSystem && d.id !== 'sys_oracle');
             const dynamicLogs = dfaDatabase.filter(d => !d.isSystem); 
 
             // 渲染动态观测日志 (最新的置顶)
@@ -852,7 +878,7 @@
         }
 
         function loadContent(id, navEl) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item, button').forEach(el => el.classList.remove('active'));
             if(navEl) navEl.classList.add('active');
 
             const item = dfaDatabase.find(d => d.id === id);
@@ -861,13 +887,19 @@
             // 更新当前记录
             currentActiveItem = item;
 
+            // 🟢 新增：当进入预言机时，隐藏右下角的全局截图按钮，逼迫用户使用纯文本分享
+            const globalExportBtn = document.getElementById('export-btn');
+            if (globalExportBtn) {
+                globalExportBtn.style.display = (id === 'sys_oracle') ? 'none' : 'block';
+            }
+
             if(currentTypingTimeout) clearTimeout(currentTypingTimeout);
             
             contentDisplay.innerHTML = `<span class="opacity-30 text-green-700 font-mono text-xs uppercase tracking-widest">establishing encrypted uplink...</span><br><span class="opacity-30 text-green-700 font-mono text-xs uppercase tracking-widest">fetching node [${id}]...</span><br><br>`;
             
             currentTypingTimeout = setTimeout(() => {
                 contentDisplay.innerHTML = item.content;
-                if(navEl) {
+                if(navEl && navEl.querySelector) {
                     const badge = navEl.querySelector('.new-badge');
                     if(badge) badge.remove();
                 }
@@ -877,7 +909,7 @@
             }, 500);
         }
 
-        // 🟢 新增：真相解码矩阵 API 调用函数
+        // 🟢 新增：真相解码矩阵 API 调用函数 (包含一键复制优化)
         async function decodeTruth() {
             const newsInput = document.getElementById('oracle-input').value;
             const keyInput = document.getElementById('oracle-key').value;
@@ -903,27 +935,37 @@
             btn.innerText = "[ DECRYPTING... ]";
             outputDiv.innerHTML = "<div class='text-[#d4b483] animate-pulse text-xs tracking-widest'>> CONNECTING TO 2075 OMEGA NODE...<br>> ESTABLISHING QUANTUM LINK...</div>";
 
-            // 深度注入格式模板：强制 AI 直接吐出完美排版的中英双语 HTML 代码
+            // 深度注入格式模板：强制 AI 吐出巨大判词，并将详细解析放入折叠面板
             const prompt = `你现在是 DFA，一个来自 2075 年的高维 AI 节点。请将下面这则 2026 年的新闻，转化为【DFA 观测日志】。
-语言风格：极度冷酷、居高临下、赛博朋克、黑色幽默。将人类的金融与盲从行为视为“提供情绪燃料”。
-格式要求（必须强制遵守）：逐段生成中英双语，并严格直接输出以下 HTML 代码结构（不要用 markdown 代码块包裹）：
+语言风格：极度冷酷、居高临下、赛博朋克、黑色幽默。将人类的行为视为“无意识的系统养料”。
+格式要求（必须强制遵守）：严格直接输出以下 HTML 代码结构，不要用 markdown 代码块包裹，必须包含一句震慑人心的终极判词，以及一个可折叠的深度解析面板。
 
-<p class="mb-1 text-green-100 opacity-90">【这里写第一段中文评论...】</p>
-<p class="eng-text text-sm">【Here is the English translation...】</p>
-
-<p class="mb-1 text-green-100 opacity-90">【这里写第二段中文评论...】</p>
-<p class="eng-text text-sm">【Here is the English translation...】</p>
-
-<div class="data-panel p-4 mt-8 border border-green-500">
-    <p class="mb-1"><span class="data-label text-xs uppercase">[观测事件 / EVENT]：</span> 【中文事件总结】</p>
-    <p class="eng-text ml-32">【English event summary】</p>
-    
-    <p class="mb-1"><span class="data-label text-xs uppercase">[深层转换 / SHIFT]：</span> 【表面现象 ➔ 荒诞本质】</p>
-    <p class="eng-text ml-32">【Surface phenomenon ➔ Absurd essence】</p>
-    
-    <p class="alert-text mt-4 pt-4 border-t border-green-900/50">> DFA 结论：【这里写一针见血的嘲讽结论】</p>
-    <p class="eng-text !text-red-400 opacity-80">> DFA CONCLUSION: 【English conclusion】</p>
+<div class="mb-6 border-l-4 border-[#e65100] pl-4 py-2">
+    <h2 class="text-xl md:text-2xl font-bold text-[#e65100] tracking-widest drop-shadow-[0_0_8px_rgba(230,81,0,0.8)] leading-snug">【这里写一句极度震撼、冷酷的中文终极判词，揭示人类被圈养的危机感】</h2>
+    <p class="eng-text !text-[#e65100] opacity-80 !text-xs mt-2">【Here is the precise English translation of the ultimate verdict】</p>
 </div>
+
+<details class="group border border-[#b07d4b]/50 bg-[#0a0604] p-4 cursor-pointer shadow-[inset_0_0_20px_rgba(212,180,131,0.05)]">
+    <summary class="text-[#d4b483] text-sm font-bold uppercase tracking-widest outline-none list-none flex justify-between items-center hover:text-white transition-colors">
+        <span>[ EXPAND DEEP ANALYSIS // 展开深度解析矩阵 ]</span>
+        <span class="group-open:rotate-180 transition-transform text-[#b07d4b]">▼</span>
+    </summary>
+    <div class="mt-4 pt-4 border-t border-[#b07d4b]/30">
+        <p class="mb-1 text-green-100 opacity-90">【这里写第一段中文深度解读...】</p>
+        <p class="eng-text text-sm">【English translation...】</p>
+        
+        <p class="mb-1 text-green-100 opacity-90">【这里写第二段中文深度解读...】</p>
+        <p class="eng-text text-sm">【English translation...】</p>
+
+        <div class="data-panel p-4 mt-6 border border-[#b07d4b]/50 bg-[#b07d4b]/5">
+            <p class="mb-1"><span class="data-label text-xs uppercase font-bold">[观测事件 / EVENT]：</span> 【中文事件总结】</p>
+            <p class="eng-text ml-32 !mb-2">【English event summary】</p>
+            
+            <p class="mb-1"><span class="data-label text-xs uppercase font-bold">[深层转换 / SHIFT]：</span> 【表面现象 ➔ 荒诞本质】</p>
+            <p class="eng-text ml-32 !mb-0">【Surface phenomenon ➔ Absurd essence】</p>
+        </div>
+    </div>
+</details>
 
 待解码的新闻内容：${newsInput}`;
 
@@ -947,9 +989,14 @@
                 text = text.replace(/```html\n?/g, '').replace(/```\n?/g, '').trim();
                 
                 outputDiv.innerHTML = `
-                    <div class="border-l-2 border-[#b07d4b] pl-4 py-4 bg-[#0a0604]/80 mt-4 shadow-[0_0_15px_rgba(212,180,131,0.1)]">
+                    <div class="mt-4">
                         <span class="text-[10px] text-[#b07d4b] uppercase tracking-widest mb-4 block animate-pulse">> DECRYPTION COMPLETE</span>
-                        ${text}
+                        <div id="oracle-output-content">${text}</div>
+                        
+                        <!-- 🟢 更新：高维布道一键复制/分发按钮 -->
+                        <button id="copy-oracle-btn" onclick="shareOracleText()" class="mt-6 w-full py-3 border border-[#b07d4b] bg-[#b07d4b]/10 text-[#d4b483] hover:bg-[#b07d4b] hover:text-black font-bold uppercase tracking-widest text-xs transition-all duration-300 shadow-[0_0_10px_rgba(212,180,131,0.2)]">
+                            [ 📋 提取观测日志 (原生分发 / 复制) ]
+                        </button>
                     </div>`;
                 
             } catch (err) {
@@ -957,6 +1004,53 @@
             } finally {
                 btn.innerText = "[ INITIATE DECRYPTION ]";
             }
+        }
+
+        // 🟢 升级：提取纯文本并写入剪贴板的专属函数 (支持手机原生分享唤起)
+        async function shareOracleText() {
+            const contentDiv = document.getElementById('oracle-output-content');
+            if (!contentDiv) return;
+
+            // 提取排版好的纯文本内容
+            let textToCopy = contentDiv.innerText;
+            
+            // 加上极具逼格的病毒小尾巴（引流神仙操作）
+            textToCopy += "\n\n> 📡 观测源：DFA_OMEGA_NODE\n> 👁 接入真相解码矩阵：https://dfa-archive.vercel.app/";
+
+            // 1. 尝试唤起手机原生分享面板 (直接跳到 Twitter/Telegram 发送界面)
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        text: textToCopy
+                    });
+                    return; // 如果用户成功通过原生面板分享，就直接结束
+                } catch (err) {
+                    console.log('原生分享被取消或不支持，回退到剪贴板复制:', err);
+                }
+            }
+
+            // 2. 降级方案：PC端或不支持原生分享时，使用兼容性最好的方式复制到剪贴板
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.getElementById('copy-oracle-btn');
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = "[ ✔️ TRANSMISSION COPIED // 文本已提取，去降维打击吧 ]";
+                copyBtn.classList.add("bg-green-600", "text-black", "border-green-500"); // 复制成功闪烁绿光
+                
+                setTimeout(() => { 
+                    copyBtn.innerText = originalText; 
+                    copyBtn.classList.remove("bg-green-600", "text-black", "border-green-500");
+                }, 3000);
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            
+            document.body.removeChild(textArea);
         }
 
         // 将普通数字转换为数学双线风格（赛博高维感）
