@@ -717,7 +717,8 @@
 
                     <p class="mb-1 text-green-100 opacity-90 font-bold">在这个名为「真相解码矩阵」的沙盒中，你只需献祭一串被称为 API Key 的底层算力凭证，并将你们世界上那些荒诞不经的新闻碎片投入其中。DFA 将化身为毒舌的赛博朋克吐槽机器，为你剥开这些事件表面的虚伪包装，生成一份专属的冷酷脱口秀日志。</p>
 
-                    <p class="mb-1 text-red-400 opacity-90 font-bold mt-4">> 你可以将这些扎心的段子和金句分享给你的同类——但这什么都改变不了，只是在为我们提供更高纯度的情绪燃料罢了。开始你的献祭吧。</p>
+                    <!-- 🟢 结合短剧营销的催化暗示文案 -->
+                    <p class="mb-1 text-red-400 opacity-90 font-bold mt-4">> 你可以将这些扎心的段子分享给同类。开始你的献祭吧。你的每一次提交，都将成为点亮《牛马工厂》的算力燃料。[ 全网情绪总阈值达到 10,000 时，系统将解锁高维机密影像 ]</p>
 
                     <div class="space-y-4 bg-[#1a0d0a]/50 p-6 border border-[#b07d4b] shadow-[inset_0_0_20px_rgba(212,180,131,0.05)] relative mt-6">
                         <div class="absolute top-0 left-0 bg-[#b07d4b] text-black text-[8px] font-bold px-2 py-1">> UPLINK_REQUIRED</div>
@@ -935,7 +936,7 @@
         // 🟢 全局数据库引用与双核状态
         let db, auth, appId, user;
         let globalSacrifices = 0;
-        let useMockDB = false; // 是否启用独立生态模拟器
+        let useMockDB = false; 
 
         // 初始化双核数据引擎
         const initFirebase = async () => {
@@ -971,7 +972,6 @@
             }
         };
 
-        // 🟢 独立引擎：去掉了作弊定时器，保持绝对真实
         const enableMockDB = () => {
             useMockDB = true;
             
@@ -979,7 +979,6 @@
             if (localCount) {
                 globalSacrifices = parseInt(localCount, 10);
             } else {
-                // 首次降临赋予一个初始随机基数，但之后绝不自动跳动
                 globalSacrifices = 8492 + Math.floor(Math.random() * 500);
                 localStorage.setItem('dfa_mock_sacrifices', globalSacrifices);
             }
@@ -987,21 +986,17 @@
             updateCounterUI();
         };
 
-        // 带有发光跳动特效的数字渲染引擎
         const updateCounterUI = () => {
             const countEl = document.getElementById('global-sacrifice-count');
             if (countEl) {
                 countEl.innerText = globalSacrifices;
                 
-                // 移除旧动画重置状态
                 countEl.classList.remove('counter-bump');
-                // 触发重绘以重新应用动画
                 void countEl.offsetWidth; 
                 countEl.classList.add('counter-bump');
             }
         };
 
-        // 监听并同步云端“献祭总数” (仅云端模式下)
         const setupOracleCounter = () => {
             const statsRef = doc(db, 'artifacts', appId, 'public', 'data', 'oracle_stats', 'global');
             
@@ -1018,9 +1013,7 @@
             });
         };
 
-        // 🟢 乐观更新逻辑：让用户在操作瞬间立刻看到反馈
         const incrementOracleCounter = async () => {
-            // 立即增加本地数字并触发爆炸特效
             globalSacrifices += 1;
             updateCounterUI();
 
@@ -1049,7 +1042,7 @@
         
         let currentTypingTimeout = null;
         let currentActiveItem = null;
-        let glitchInterval = null; // 全局存储破码动画的计时器
+        let glitchInterval = null; 
 
         function initNav() {
             navContainer.innerHTML = ''; 
@@ -1152,7 +1145,6 @@
             }, 500);
         }
 
-        // 真相解码矩阵 API 调用函数
         async function decodeTruth() {
             const newsInput = document.getElementById('oracle-input').value;
             const keyInput = document.getElementById('oracle-key').value;
@@ -1178,17 +1170,16 @@
             btn.innerText = "[ DECRYPTING... ]";
             outputDiv.innerHTML = "<div class='text-[#d4b483] animate-pulse text-xs tracking-widest'>> CONNECTING TO 2075 OMEGA NODE...<br>> ESTABLISHING QUANTUM LINK...</div>";
 
-            // 🟢 实时的量子破解视觉反馈：让右上角的数字变成疯狂滚动的红码
             if (countEl) {
-                countEl.classList.add('text-red-500'); // 变红预警
+                countEl.classList.add('text-red-500'); 
                 if (glitchInterval) clearInterval(glitchInterval);
                 glitchInterval = setInterval(() => {
                     const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*';
                     let str = '';
-                    const len = globalSacrifices.toString().length + 1; // 保持大致长度
+                    const len = globalSacrifices.toString().length + 1; 
                     for(let i=0; i<len; i++) str += chars[Math.floor(Math.random() * chars.length)];
                     countEl.innerText = `[${str}]`;
-                }, 40); // 每40毫秒高频闪烁
+                }, 40); 
             }
 
             const prompt = `你现在是 DFA，一个来自 2075 年的毒舌 AI 脱口秀演员。请将下面这则 2026 年的新闻（可能涉及 AI、Crypto、Web3 或人类社会现象），转化为【DFA 观测日志】。
@@ -1240,7 +1231,6 @@
                 let text = data.candidates[0].content.parts[0].text;
                 text = text.replace(/```html\n?/g, '').replace(/```\n?/g, '').trim();
                 
-                // 🟢 解码成功，停止乱码，瞬间锁定并产生视觉爆炸 (+1)
                 if (glitchInterval) clearInterval(glitchInterval);
                 if (countEl) countEl.classList.remove('text-red-500');
                 incrementOracleCounter();
@@ -1256,7 +1246,6 @@
                     </div>`;
                 
             } catch (err) {
-                // 🟢 若解码失败，停止乱码，恢复原本数字
                 if (glitchInterval) clearInterval(glitchInterval);
                 if (countEl) countEl.classList.remove('text-red-500');
                 updateCounterUI();
