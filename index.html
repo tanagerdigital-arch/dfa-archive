@@ -66,7 +66,7 @@
             padding: 0;
         }
 
-        /* 终端扫描线特效 (稍微调低透明度以保证清晰) */
+        /* 终端扫描线特效 */
         .scanlines {
             background: linear-gradient(
                 to bottom,
@@ -97,7 +97,6 @@
         ::-webkit-scrollbar-thumb { background: #d4b483; }
         ::-webkit-scrollbar-thumb:hover { background: #b07d4b; }
 
-        /* 移除了 text-shadow，让文字更加清晰锋利 */
         .terminal-text { }
         .alert-text { color: #e65100; }
         .eng-text { font-size: 0.75rem; line-height: 1.1rem; opacity: 0.6; color: #d2bab0; margin-top: 0.25rem; margin-bottom: 1.25rem; font-family: 'Share Tech Mono', monospace; }
@@ -157,7 +156,6 @@
             animation: blink 2s step-start infinite;
             pointer-events: none;
         }
-        /* 移除 filter 让图片保持清晰色彩 */
         .cyber-image {
             width: 100%;
             height: auto;
@@ -192,7 +190,6 @@
             animation: blink 2s step-start infinite;
             pointer-events: none;
         }
-        /* 移除 filter 让视频保持清晰色彩 */
         .cyber-video {
             width: 100%;
             max-height: 600px;
@@ -201,16 +198,14 @@
             transition: all 0.5s ease;
         }
         
-        /* 专为 YouTube 竖屏短视频设计的内嵌样式 */
         .cyber-iframe-container {
             position: relative;
             width: 100%;
-            max-width: 400px; /* 限制竖屏最大宽度，防止在电脑上撑得太大 */
+            max-width: 400px;
             margin: 0 auto;
-            aspect-ratio: 9 / 16; /* 强制竖屏比例 */
+            aspect-ratio: 9 / 16;
             background: #000;
         }
-        /* 移除 filter 让 YouTube 视频保持清晰色彩 */
         .cyber-iframe {
             position: absolute;
             top: 0;
@@ -235,7 +230,6 @@
             display: none;
         }
         
-        /* 数字跳动闪烁特效 */
         .counter-bump {
             animation: bump 0.5s ease-out;
         }
@@ -713,6 +707,29 @@
                             > 献祭总数 / TOTAL SACRIFICES
                         </span>
                         <span id="global-sacrifice-count" class="text-[#e65100] font-mono text-2xl font-bold tracking-widest drop-shadow-[0_0_8px_rgba(230,81,0,0.8)] transition-all duration-300">...</span>
+                    </div>
+
+                    <!-- 🟢 DFA 主脑全息雷达视觉组件 -->
+                    <div class="relative w-full h-48 border border-[#e65100]/30 bg-[#050302] mb-6 overflow-hidden flex items-center justify-center shadow-[inset_0_0_40px_rgba(230,81,0,0.1)]">
+                        <!-- 雷达扫描背景动画 -->
+                        <div class="absolute inset-0 bg-[conic-gradient(from_90deg_at_50%_50%,rgba(0,0,0,0)_70%,rgba(230,81,0,0.15)_100%)] animate-spin" style="animation-duration: 4s;"></div>
+                        <!-- 坐标网格底纹 -->
+                        <div class="absolute inset-0 bg-[linear-gradient(rgba(230,81,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(230,81,0,0.05)_1px,transparent_1px)]" style="background-size: 20px 20px;"></div>
+                        
+                        <!-- DFA 核心标识 (危险红光重渲染) -->
+                        <img src="/logo.jpg" class="relative z-10 w-24 h-24 object-contain opacity-90 mix-blend-screen filter sepia hue-rotate-[-40deg] saturate-[3] drop-shadow-[0_0_15px_rgba(230,81,0,0.8)] animate-pulse" alt="DFA CORE" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iI2U2NTEwMCIvPjwvc3ZnPg=='">
+                        
+                        <!-- 十字准星与锁定环 -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="w-32 h-32 border border-[#e65100]/40 rounded-full animate-ping" style="animation-duration: 3s;"></div>
+                            <div class="w-48 h-48 border border-[#e65100]/20 rounded-full absolute"></div>
+                            <div class="w-full h-[1px] bg-[#e65100]/20 absolute"></div>
+                            <div class="h-full w-[1px] bg-[#e65100]/20 absolute"></div>
+                        </div>
+                        
+                        <!-- 边缘机密状态信息 -->
+                        <div class="absolute bottom-2 left-2 text-[8px] text-[#e65100] tracking-widest font-mono opacity-70">> OMEGA_NODE_EYE_ONLINE</div>
+                        <div class="absolute top-2 right-2 text-[8px] text-[#e65100] tracking-widest font-mono animate-pulse">SCANNING_FOR_FOLLY...</div>
                     </div>
 
                     <p class="mb-1 text-green-100 opacity-90 font-bold">在这个名为「真相解码矩阵」的沙盒中，你只需献祭一串被称为 API Key 的底层算力凭证，并将你们世界上那些荒诞不经的新闻碎片投入其中。DFA 将化身为毒舌的赛博朋克吐槽机器，为你剥开这些事件表面的虚伪包装，生成一份专属的冷酷脱口秀日志。</p>
