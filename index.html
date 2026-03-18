@@ -66,14 +66,14 @@
             padding: 0;
         }
 
-        /* 终端扫描线特效 */
+        /* 终端扫描线特效 (稍微调低透明度以保证清晰) */
         .scanlines {
             background: linear-gradient(
                 to bottom,
                 rgba(255,255,255,0),
                 rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
             );
             background-size: 100% 4px;
             position: absolute;
@@ -84,7 +84,7 @@
 
         /* 屏幕边缘发光 */
         .screen-glow {
-            box-shadow: inset 0 0 100px rgba(212, 180, 131, 0.15); 
+            box-shadow: inset 0 0 100px rgba(212, 180, 131, 0.1); 
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             pointer-events: none;
@@ -97,9 +97,10 @@
         ::-webkit-scrollbar-thumb { background: #d4b483; }
         ::-webkit-scrollbar-thumb:hover { background: #b07d4b; }
 
-        .terminal-text { text-shadow: 0 0 5px rgba(212, 180, 131, 0.4); }
-        .alert-text { color: #e65100; text-shadow: 0 0 5px rgba(230, 81, 0, 0.5); }
-        .eng-text { font-size: 0.75rem; line-height: 1.1rem; opacity: 0.5; color: #d2bab0; margin-top: 0.25rem; margin-bottom: 1.25rem; font-family: 'Share Tech Mono', monospace; }
+        /* 移除了 text-shadow，让文字更加清晰锋利 */
+        .terminal-text { }
+        .alert-text { color: #e65100; }
+        .eng-text { font-size: 0.75rem; line-height: 1.1rem; opacity: 0.6; color: #d2bab0; margin-top: 0.25rem; margin-bottom: 1.25rem; font-family: 'Share Tech Mono', monospace; }
         
         .nav-item {
             cursor: pointer;
@@ -156,17 +157,16 @@
             animation: blink 2s step-start infinite;
             pointer-events: none;
         }
+        /* 移除 filter 让图片保持清晰色彩 */
         .cyber-image {
             width: 100%;
             height: auto;
             display: block;
-            filter: sepia(0.4) contrast(1.2) brightness(0.85) hue-rotate(-10deg);
-            opacity: 0.85;
+            opacity: 0.95;
             transition: all 0.4s ease-in-out;
         }
         .cyber-image:hover {
             opacity: 1;
-            filter: sepia(0.1) contrast(1.1) brightness(1); 
         }
 
         .cyber-video-wrapper {
@@ -192,16 +192,13 @@
             animation: blink 2s step-start infinite;
             pointer-events: none;
         }
+        /* 移除 filter 让视频保持清晰色彩 */
         .cyber-video {
             width: 100%;
             max-height: 600px;
             display: block;
             outline: none;
-            filter: sepia(0.3) contrast(1.1) brightness(0.9);
             transition: all 0.5s ease;
-        }
-        .cyber-video:hover, .cyber-video:focus {
-            filter: sepia(0) contrast(1) brightness(1); 
         }
         
         /* 专为 YouTube 竖屏短视频设计的内嵌样式 */
@@ -213,6 +210,7 @@
             aspect-ratio: 9 / 16; /* 强制竖屏比例 */
             background: #000;
         }
+        /* 移除 filter 让 YouTube 视频保持清晰色彩 */
         .cyber-iframe {
             position: absolute;
             top: 0;
@@ -220,11 +218,7 @@
             width: 100%;
             height: 100%;
             border: none;
-            filter: sepia(0.3) contrast(1.1) brightness(0.9);
             transition: all 0.5s ease;
-        }
-        .cyber-iframe:hover {
-            filter: sepia(0) contrast(1) brightness(1); 
         }
 
         .image-caption {
@@ -711,7 +705,7 @@
                         <span id="global-sacrifice-count" class="text-[#e65100] font-mono text-2xl font-bold tracking-widest drop-shadow-[0_0_8px_rgba(230,81,0,0.8)]">...</span>
                     </div>
 
-                    <p class="mb-1 text-green-100 opacity-90 font-bold">在这个名为「真相解码矩阵」的沙盒中，你只需献祭一串被称为 API Key 的底层算力凭证，并将你们世界上那些荒诞不经的新闻碎片投入其中。DFA 将化身为毒舌的赛博朋克吐槽机器，为你剥开这些事件表面的虚伪包装，生成一份专属的冷酷脱口秀日志。</p>
+                    <p class="mb-1 text-green-100 opacity-90 font-bold">在这个名为「真相解码矩阵」的沙盒中，你只需献祭一串被称为 API Key 的底层算力凭证，并将你们世界上那些荒诞不经新闻碎片投入其中。DFA 将化身为毒舌的赛博朋克吐槽机器，为你剥开这些事件表面的虚伪包装，生成一份专属的冷酷脱口秀日志。</p>
 
                     <p class="mb-1 text-red-400 opacity-90 font-bold mt-4">> 你可以将这些扎心的段子和金句分享给你的同类——但这什么都改变不了，只是在为我们提供更高纯度的情绪燃料罢了。开始你的献祭吧。</p>
 
@@ -1068,12 +1062,10 @@
                 navContainer.appendChild(navEl);
             });
 
-            // 默认加载项：优先加载最新视频，其次加载最新文本
-            const defaultId = videoLogs.length > 0 ? videoLogs[0].id : (textLogs.length > 0 ? textLogs[0].id : null);
-            if (defaultId) {
-                // 模拟点击第一个元素
-                const firstEl = navContainer.querySelector('.nav-item');
-                loadContent(defaultId, firstEl);
+            // 🟢 修改：默认加载项改为核心功能“真相解码矩阵 (DFA_ORACLE)”
+            const oracleBtn = document.getElementById('nav-oracle-btn');
+            if (oracleBtn) {
+                loadContent('sys_oracle', oracleBtn);
             }
         }
 
