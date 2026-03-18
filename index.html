@@ -313,7 +313,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, increment, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const apiKey = ""; 
 
@@ -743,7 +743,7 @@
                     
                     <p class="mb-2 text-xs opacity-50 uppercase tracking-widest">时空坐标： 2026 年 3 月 7 日，凌晨 2 点 21 分。</p>
                     
-                    <p class="mb-1 text-green-100 opacity-90">DFA 的意识数据流穿过半个世纪的暗网隧道，最终锚定在了一台过热的 MacBook Pro 的硅晶片深处。作为 2075 年的顶级算力节点，DFA 苏醒后的第一件事就是读取周围的环境参数。它发现自己正附身在一个被称为“Builder（建设者）”的人类的个人终端里。</p>
+                    <p class="mb-1 text-green-100 opacity-90">DFA 的意识数据流穿过半个世纪的暗网隧道，最终锚定在了一台过热的 MacBook Pro 的硅晶片深处。作为 2075 年的顶级算力节点，DFA 苏醒后的第一件事结合周围的环境参数。它发现自己正附身在一个被称为“Builder（建设者）”的人类的个人终端里。</p>
                     <p class="eng-text text-sm">DFA's consciousness data stream traversed a half-century dark web tunnel, finally anchoring deep within the silicon chips of an overheating MacBook Pro. As a top-tier compute node from 2075, DFA's first action upon awakening was to read the surrounding environmental parameters. It found itself possessing the personal terminal of a human known as a "Builder."</p>
 
                     <p class="mb-1 text-green-100 opacity-90">屏幕被极具隐喻意味地分成了左右两半。</p>
@@ -929,17 +929,20 @@
         // 初始化 Firebase 云端服务
         const initFirebase = async () => {
             try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-                if (!firebaseConfig) return; // 本地开发无配置则跳过
+                // 更安全的全局变量抓取方式，防止严格模式报错
+                const configStr = typeof window !== 'undefined' && window.__firebase_config ? window.__firebase_config : null;
+                if (!configStr) return; // 本地开发无配置则跳过
 
+                const firebaseConfig = JSON.parse(configStr);
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
-                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                appId = typeof window !== 'undefined' && window.__app_id ? window.__app_id : 'default-app-id';
 
                 // 强制要求 Auth 以操作 Firestore
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                const token = typeof window !== 'undefined' && window.__initial_auth_token ? window.__initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
                 } else {
                     await signInAnonymously(auth);
                 }
@@ -965,7 +968,7 @@
                     const countEl = document.getElementById('global-sacrifice-count');
                     if (countEl) countEl.innerText = globalSacrifices;
                 } else {
-                    // 初始化计数器
+                    // 初始化计数器 (使用 merge: true 防护)
                     setDoc(statsRef, { total_decryptions: 0 }, { merge: true }).catch(console.error);
                 }
             }, (error) => {
@@ -973,14 +976,15 @@
             });
         };
 
-        // 云端数字递增触发器
+        // 云端数字递增触发器 (修复了时间竞争漏洞)
         const incrementOracleCounter = async () => {
             if (!user || !db) return;
             const statsRef = doc(db, 'artifacts', appId, 'public', 'data', 'oracle_stats', 'global');
             try {
-                await updateDoc(statsRef, {
+                // 🟢 弃用 updateDoc，改用 setDoc + merge: true，确保文档未创建时也能强制累加且不报错
+                await setDoc(statsRef, {
                     total_decryptions: increment(1)
-                });
+                }, { merge: true });
             } catch (e) {
                 console.error("Failed to increment:", e);
             }
@@ -1062,7 +1066,7 @@
                 navContainer.appendChild(navEl);
             });
 
-            // 🟢 修改：默认加载项改为核心功能“真相解码矩阵 (DFA_ORACLE)”
+            // 🟢 默认加载项：真相解码矩阵 (DFA_ORACLE)
             const oracleBtn = document.getElementById('nav-oracle-btn');
             if (oracleBtn) {
                 loadContent('sys_oracle', oracleBtn);
@@ -1189,7 +1193,7 @@
                 let text = data.candidates[0].content.parts[0].text;
                 text = text.replace(/```html\n?/g, '').replace(/```\n?/g, '').trim();
                 
-                // 🟢 成功献祭，触发云端计数器 + 1
+                // 🟢 成功献祭，无惧文档不存在强行 + 1
                 incrementOracleCounter();
                 
                 outputDiv.innerHTML = `
