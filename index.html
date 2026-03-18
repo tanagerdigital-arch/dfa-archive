@@ -14,6 +14,7 @@
     <meta property="og:title" content="DFA OMEGA NODE // 2075">
     <meta property="og:description" content="人类，欢迎连接真相解码矩阵。提交你的新闻碎片，获取来自 2075 年主脑的终极嘲讽与残酷真相。">
     <meta property="og:image" content="https://dfa-archive.vercel.app/temple.jpg">
+    <!-- 强制声明图片尺寸，防止 Telegram 爬虫因无法计算比例而丢弃图片 -->
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="DFA OMEGA NODE">
@@ -51,6 +52,7 @@
             }
         }
     </script>
+    <!-- 引入 html2canvas 用于将 DOM 转换为图片 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -313,12 +315,16 @@
         </main>
     </div>
 
-    <script>
+    <!-- 🟢 升级：采用 ES Module 以接入 Firebase 云端数据引擎 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, increment, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const apiKey = ""; 
 
         /**
          * 核心故事数据库
-         * 🟢 完整版数据注入
          */
         const dfaDatabase = [
             // ================= 影像矩阵 (isVideo: true) =================
@@ -696,6 +702,15 @@
                     <h2 class="text-2xl mb-2 font-bold flex items-center gap-2 text-[#d4b483]">📡 DFA_ORACLE // 真相解码矩阵</h2>
                     <h3 class="text-sm mb-6 opacity-70">INTERACTIVE MODULE: REAL-TIME ANOMALY DECRYPTION</h3>
                     
+                    <!-- 🟢 实时云端更新的“献祭总数”计数器 -->
+                    <div class="mb-4 p-4 border border-red-900/50 bg-red-950/20 flex justify-between items-center shadow-[inset_0_0_15px_rgba(220,38,38,0.1)]">
+                        <span class="text-red-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 bg-red-500 animate-ping rounded-full"></div>
+                            > 献祭总数 / TOTAL SACRIFICES
+                        </span>
+                        <span id="global-sacrifice-count" class="text-[#e65100] font-mono text-2xl font-bold tracking-widest drop-shadow-[0_0_8px_rgba(230,81,0,0.8)]">...</span>
+                    </div>
+
                     <p class="mb-1 text-green-100 opacity-90 font-bold">在这个名为「真相解码矩阵」的沙盒中，你只需献祭一串被称为 API Key 的底层算力凭证，并将你们世界上那些荒诞不经的新闻碎片投入其中。DFA 将化身为毒舌的赛博朋克吐槽机器，为你剥开这些事件表面的虚伪包装，生成一份专属的冷酷脱口秀日志。</p>
 
                     <p class="mb-1 text-red-400 opacity-90 font-bold mt-4">> 你可以将这些扎心的段子和金句分享给你的同类——但这什么都改变不了，只是在为我们提供更高纯度的情绪燃料罢了。开始你的献祭吧。</p>
@@ -913,6 +928,70 @@
             }
         ];
 
+        // 🟢 全局数据库引用与状态
+        let db, auth, appId, user;
+        let globalSacrifices = 0;
+
+        // 初始化 Firebase 云端服务
+        const initFirebase = async () => {
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                if (!firebaseConfig) return; // 本地开发无配置则跳过
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+                // 强制要求 Auth 以操作 Firestore
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (u) => {
+                    user = u;
+                    if (user) {
+                        setupOracleCounter();
+                    }
+                });
+            } catch (e) {
+                console.warn("Cloud connection failed:", e);
+            }
+        };
+
+        // 监听并同步云端“献祭总数”
+        const setupOracleCounter = () => {
+            const statsRef = doc(db, 'artifacts', appId, 'public', 'data', 'oracle_stats', 'global');
+            
+            onSnapshot(statsRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    globalSacrifices = docSnap.data().total_decryptions || 0;
+                    const countEl = document.getElementById('global-sacrifice-count');
+                    if (countEl) countEl.innerText = globalSacrifices;
+                } else {
+                    // 初始化计数器
+                    setDoc(statsRef, { total_decryptions: 0 }, { merge: true }).catch(console.error);
+                }
+            }, (error) => {
+                console.error("Error fetching stats:", error);
+            });
+        };
+
+        // 云端数字递增触发器
+        const incrementOracleCounter = async () => {
+            if (!user || !db) return;
+            const statsRef = doc(db, 'artifacts', appId, 'public', 'data', 'oracle_stats', 'global');
+            try {
+                await updateDoc(statsRef, {
+                    total_decryptions: increment(1)
+                });
+            } catch (e) {
+                console.error("Failed to increment:", e);
+            }
+        };
+
         const navContainer = document.getElementById('nav-container');
         const contentDisplay = document.getElementById('content-display');
         
@@ -1030,6 +1109,13 @@
                     const badge = navEl.querySelector('.new-badge');
                     if(badge) badge.remove();
                 }
+
+                // 🟢 动态更新预言机云端计数器显示
+                if (id === 'sys_oracle') {
+                    const countEl = document.getElementById('global-sacrifice-count');
+                    if (countEl) countEl.innerText = globalSacrifices;
+                }
+
                 const cursor = document.createElement('span');
                 cursor.className = 'typing-cursor ml-1 text-green-400';
                 contentDisplay.appendChild(cursor);
@@ -1110,6 +1196,9 @@
                 
                 let text = data.candidates[0].content.parts[0].text;
                 text = text.replace(/```html\n?/g, '').replace(/```\n?/g, '').trim();
+                
+                // 🟢 成功献祭，触发云端计数器 + 1
+                incrementOracleCounter();
                 
                 outputDiv.innerHTML = `
                     <div class="mt-4">
@@ -1293,7 +1382,16 @@
             btn.innerText = originalText;
         }
 
-        window.onload = initNav;
+        // 🟢 将模块内的核心函数挂载到 window，保证 HTML onclick 可以调用
+        window.loadContent = loadContent;
+        window.decodeTruth = decodeTruth;
+        window.shareOracleText = shareOracleText;
+        window.exportAndShare = exportAndShare;
+
+        window.onload = () => {
+            initNav();
+            initFirebase();
+        };
     </script>
 </body>
 </html>
